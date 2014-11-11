@@ -2,7 +2,7 @@
 --**File	:Heap.lua
 --**Author	:stlnkm(Sean Lin)
 --**Date  	:2014/11/11
---**Version	:1.0.0
+--**Version	:1.0.1
 --*****************************************************************
 
 Heap = {}
@@ -67,7 +67,7 @@ function Heap:siftDown( idx )
 	local n = #data
 	local c, p = 2*idx, idx
 	while c <= n do
-		if cmp(data[c+1], data[c]) then
+		if data[c+1] and cmp(data[c+1], data[c]) then
 			c = c + 1
 		end
 		if cmp(data[c], data[p]) then
@@ -79,23 +79,28 @@ function Heap:siftDown( idx )
 	end
 end
 
-local function testHeap(  )
-	local function dump( h )
-		local data = {}
-		for i = 1, h:size() do
-			table.insert(data, h:at(i))
+function Heap:debugDump( msg, fmtfunc )
+	local item = {msg or ""}
+	for i,v in ipairs(self.data) do
+		if fmtfunc ~= nil then
+			table.insert(item, fmtfunc(i, v))
+		else
+			table.insert(item, string.format("{[INDEX]:%d [VALUE]:%s}", i, tostring(v)))
 		end
-		print(unpack(data))
 	end
-	local data = {25, 12, 36, 27, 45, 2, 89, 21, 36, 45, 32, 6}
+	print(table.concat(item))
+end
+
+local function testHeap(  )
+	local data = {25, 12, 36, 27, 45, 2, 89, 21, 36, 45, 32, 6, 7}
 	local function lt( a, b )
-		return a < b
+		return a > b
 	end
 	local heap = Heap.new(lt, data)
-	dump(heap)
-	heap:remove(1)
-	dump(heap)
+	heap:debugDump("HEAP:")
+	heap:remove(6)
+	heap:debugDump("HEAP:")
 	heap:insert(100)
-	dump(heap)
+	heap:debugDump("HEAP:")
 end
 -- testHeap()
